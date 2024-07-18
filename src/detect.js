@@ -1,7 +1,5 @@
 import detectEthereumProvider from "@metamask/detect-provider";
 
-const chainId = await window.ethereum.request({ method: "eth_chainId" })
-
 async function setup() {
     const provider = await detectEthereumProvider()
 
@@ -12,6 +10,31 @@ async function setup() {
         console.log("請安裝 MetaMask!")
     }
 }
+
+// 需要安裝 chrome MetaMask extension
+const chainId = await window.ethereum.request({ method: "eth_chainId" })
+
+const ethereumButton = document.querySelector(".enableEthereumButton")
+const showAccount = document.querySelector(".showAccount")
+
+ethereumButton.addEventListener("click", () => { 
+    getAccount()
+})
+
+async function getAccount() {
+    const accounts = await window.ethereum
+        .request({ method: "eth_requestAccounts" })
+        .catch((err) => {
+            if (err.code === 4001) {
+                console.log("請連線至 Metamask")
+            } else {
+                console.error(err)
+            }
+        })
+const account = accounts[0]
+showAccount.innerHTML = account
+}
+
 function handleChainChanged(chainId) {
     // 建議重刷頁面 reload page
     window.location.reload()
